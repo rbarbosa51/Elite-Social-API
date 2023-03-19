@@ -23,7 +23,9 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
   updateById(req,res) {
-    res.send('Not finished')
+    User.findOneAndUpdate({_id: req.params.userId},{$set:req.body})
+    .then((user) => !user ? res.status(404).json({message: 'No user with that ID'}) : res.json(user))
+    .catch(error => res.status(500).json(error))
   },
   deleteUser(req,res) {
     User.findOneAndDelete({_id: req.params.userId})
