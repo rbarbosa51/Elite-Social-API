@@ -36,9 +36,15 @@ module.exports = {
     .then( (friend) => !friend ? res.send(404).json({message: 'No friend with that ID'}) : res.send(friend))
     .catch((error) => res.status(500).json({error}));
   },
-  removeFriendUserList(req,res) {
-    User.findOneAndUpdate({_id: req.params.userId}, {$pull: {friends: {_id: req.params.friendId}}}, { runValidators: true, new: true })
+  async removeFriendUserList(req,res) {
+    const user1 = await User.findOne({ _id: req.params.userId });
+    await user1.friends.pull(req.params.friendId);
+    await user1.save();
+    res.status(200).json(user1);
+    /*
+    User.findOneAndUpdate({_id: req.params.userId}, {$pull: {friends: {ObjectId: req.params.friendId}}}, {new: true })
     .then(user => !user ? res.status(404).json({message: 'No user with that id'}) : res.json(user))
     .catch(error => res.status(500).json(error))
+    */
   }
 };
