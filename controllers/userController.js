@@ -32,11 +32,13 @@ module.exports = {
     .then((user) => !user ? res.status(400).json({message: 'No user with that ID'}) : res.json({message: 'User was deleted'}))
   },
   addNewFriendUserList(req,res) {
-    User.findOneAndUpdate({_id: req.params.userId}, {$addToSet: {friends: req.params.friendId}})
+    User.findOneAndUpdate({_id: req.params.userId}, {$addToSet: {friends: req.params.friendId}}, { runValidators: true, new: true })
     .then( (friend) => !friend ? res.send(404).json({message: 'No friend with that ID'}) : res.send(friend))
     .catch((error) => res.status(500).json({error}));
   },
   removeFriendUserList(req,res) {
-    res.send('Not finished')
+    User.findOneAndUpdate({_id: req.params.userId}, {$pull: {friends: {_id: req.params.friendId}}}, { runValidators: true, new: true })
+    .then(user => !user ? res.status(404).json({message: 'No user with that id'}) : res.json(user))
+    .catch(error => res.status(500).json(error))
   }
 };
