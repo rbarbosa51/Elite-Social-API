@@ -37,10 +37,15 @@ module.exports = {
     .catch((error) => res.status(500).json({error}));
   },
   async removeFriendUserList(req,res) {
-    const user1 = await User.findOne({ _id: req.params.userId });
-    await user1.friends.pull(req.params.friendId);
-    await user1.save();
-    res.status(200).json(user1);
+    const user = await User.findOne({ _id: req.params.userId });
+    await user.friends.pull(req.params.friendId);
+    user = await user.save();
+    if (!user) {
+      res.status(404).json({message: 'No user with that id'})
+    } else {
+      res.status(200).json(user);
+    }
+    
     /*
     User.findOneAndUpdate({_id: req.params.userId}, {$pull: {friends: {ObjectId: req.params.friendId}}}, {new: true })
     .then(user => !user ? res.status(404).json({message: 'No user with that id'}) : res.json(user))
