@@ -12,17 +12,18 @@ const thoughtSchema = new Schema(
         createAt: {
             type: Date,
             default: Date.now,
+            get: v => `Created at: ${v}`
         },
         username: {
             type: Schema.Types.String,
             required: true
         },
         reactions: [Reaction]
-
     },
     {
         toJSON: {
             virtuals: true,
+            getters: true
         }
     }
 );
