@@ -13,8 +13,8 @@ router.route('/:userId')
 .put(updateById)
 .delete(deleteUser);
 
-// /api/users/:userId/friend/:friendId
-router.route('/:userId/friend/:friendId')
+// /api/users/:userId/friends/:friendId
+router.route('/:userId/friends/:friendId')
 .put(addNewFriendUserList)
 .delete(removeFriendUserList)
 

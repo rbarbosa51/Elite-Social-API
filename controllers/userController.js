@@ -43,10 +43,10 @@ module.exports = {
         return;
       }
       //Bonus -> Delete all associated thoughts before deleting
-      const thoughts = await Thought.deleteMany({username: user.username});
-      await thoughts.save();
-      
-      res.status(200).json({message: 'User and thoughts succesfully deleted!'});
+      //const thoughts = await Thought.deleteMany({username: user.username});
+      //await thoughts.save();
+
+      res.status(200).json({message: 'User was succesfully deleted!'});
     } catch (error) {
       res.status(500).json(error);
     }
@@ -67,8 +67,11 @@ module.exports = {
         res.status(404).json({message: 'No user with that ID'});
         return;
       }
+      console.log(1);
       await user.friends.pull(req.params.friendId);
+      console.log(2);
       user = await user.save();
+      console.log(3);
       res.status(200).json(user);
     } catch (error) {
       res.status(500).json(error);
