@@ -27,6 +27,9 @@ const thoughtSchema = new Schema(
         }
     }
 );
+thoughtSchema.methods.getTime = function() {
+    return Date.format(this.createdAt);
+}
 thoughtSchema.virtual('reactionCount').get(function() {
     return this.reactions.length;
 });
