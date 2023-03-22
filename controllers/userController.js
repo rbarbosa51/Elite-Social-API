@@ -42,11 +42,12 @@ module.exports = {
         res.status(404).json({message: 'No user with that ID'});
         return;
       }
-      //Bonus -> Delete all associated thoughts before deleting
-      //const thoughts = await Thought.deleteMany({username: user.username});
-      //await thoughts.save();
-
-      res.status(200).json({message: 'User was succesfully deleted!'});
+      /*Bonus -> Delete all associated thoughts before deleting
+      Return value (user) is the value before deletion.
+      We can then extract the username to delete the thoughts if available*/
+      const deletedCount = await Thought.deleteMany({username: user.username});
+      console.log(deletedCount)
+      res.status(200).json({message: 'User and thoughts were succesfully deleted!'});
     } catch (error) {
       res.status(500).json(error);
     }
