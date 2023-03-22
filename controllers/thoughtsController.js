@@ -1,6 +1,6 @@
 const Thought = require('../models/Thought');
 const User = require('../models/User');
-const Reaction = require('../models/Reaction');
+
 
 module.exports = {
     async getAllThoughts(req,res) {
@@ -57,24 +57,16 @@ module.exports = {
     },
     async createReaction(req,res) {
         try {
-            const thought = await Thought.findOneAndUpdate({_id: req.params.thoughtId}, {$addToSet: {reactions: req.body}}, {new: true});
+            const thought = await Thought.findOneAndUpdate({_id: req.params.thoughtId}, {$addToSet: {reactions: req.body}}, {runValidators: true, new: true});
             thought ? res.status(200).json(thought) : res.status(404).json({message: 'No such thought'});
-
         } catch (error) {
             res.status(500).json(error);
         }
     },
     async deleteReaction(req,res) {
         try {
-            const thought = await Thought.findById(req.params.thoughtId);
-            //Guard - Exit if no thought
-            if (!thought) {
-                res.status(404).json({message: 'No such thought'});
-                return;
-            }
-            await thought.reactions.pull(req.body.reactionId);
-            thought = await thought.sabe();
-            res.status(200).json(thought);
+            const thought = await Thought.findOneAndUpdate({_id: req.params.thoughtId}, {$pull: {reactions: {reactionId: req.body.reactionId}}}, {new: true});
+            thought ? res.status(200).json(thought) : res.status(404).json({message: "No such thought or reaction"});
         } catch (error) {
             res.status(500).json(error);
         }
