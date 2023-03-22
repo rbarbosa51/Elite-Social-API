@@ -4,7 +4,7 @@ const Thought = require('../models/Thought');
 module.exports = {
     async getAllUsers(req, res) {
       try {
-        const users = await User.find();
+        const users = await User.find().select('-__v');
         res.status(200).json(users);
       } catch (error) {
         res.status(500).json(error);
@@ -12,7 +12,7 @@ module.exports = {
   },
   async getSingleUser(req, res) {
     try {
-      const user = await User.findOne({_id: req.params.userId});
+      const user = await User.findOne({_id: req.params.userId}).select('-__v');
       user ? res.status(200).json(user) : res.status(404).json({message: 'No user with that ID'});
     } catch (error) {
       res.status(500).json(error);
@@ -61,26 +61,10 @@ module.exports = {
   },
   async removeFriendUserList(req,res) {
     try {
-      const user = await User.findById(req.params.userId);
-      //Guard - exit if no user
-      if (!user) {
-        res.status(404).json({message: 'No user with that ID'});
-        return;
-      }
-      console.log(1);
-      await user.friends.pull(req.params.friendId);
-      console.log(2);
-      user = await user.save();
-      console.log(3);
-      res.status(200).json(user);
+      const user = await User.findOneAndUpdate({_id: req.params.userId}, {$pull: {friends: { $eq: req.params.friendId}}}, {new: true });
+      user ? res.status(200).json(user) : res.status(404).json({message: 'No user with that id'});
     } catch (error) {
       res.status(500).json(error);
     } 
   }
 };
-
-/*
-    User.findOneAndUpdate({_id: req.params.userId}, {$pull: {friends: {ObjectId: req.params.friendId}}}, {new: true })
-    .then(user => !user ? res.status(404).json({message: 'No user with that id'}) : res.json(user))
-    .catch(error => res.status(500).json(error))
-    */
