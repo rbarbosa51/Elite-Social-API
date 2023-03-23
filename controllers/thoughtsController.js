@@ -1,13 +1,22 @@
 const Thought = require("../models/Thought");
 const User = require("../models/User");
 
+//Global constants
+const notFoundError = "No such thought";
+const statusCodes = [200, 404, 500];
+const otherUserFeedback = [
+  "No such user",
+  "Thought successfully deleted",
+  "No such thought or reaction",
+];
+
 module.exports = {
   async getAllThoughts(req, res) {
     try {
       const thoughts = await Thought.find();
-      res.status(200).json(thoughts);
+      res.status(statusCodes[0]).json(thoughts);
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async getSingleThought(req, res) {
@@ -16,11 +25,11 @@ module.exports = {
         _id: req.params.thoughtId,
       }).select("-__v");
       thought
-        ? res.status(200).json(thought)
-        : res.status(404).json({ message: "No such thought" });
+        ? res.status(statusCodes[0]).json(thought)
+        : res.status(statusCodes[1]).json({ message: notFoundError });
       return;
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async createNewThought(req, res) {
@@ -28,7 +37,7 @@ module.exports = {
       const user = await User.findById(req.body.userId);
       //Guard -- Exit if no user found
       if (!user) {
-        res.status(404).json({ message: "No such user" });
+        res.status(statusCodes[1]).json({ message: otherUserFeedback[0] });
         return;
       }
       const thought = await Thought.create({
@@ -37,9 +46,9 @@ module.exports = {
       });
       await user.thoughts.push(thought._id);
       await user.save();
-      res.status(200).json({ thought });
+      res.status(statusCodes[0]).json({ thought });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async updateThoughtById(req, res) {
@@ -49,10 +58,10 @@ module.exports = {
         { $set: req.body }
       );
       thought
-        ? res.status(200).json(thought)
-        : res.status(404).json({ message: "No such thought" });
+        ? res.status(statusCodes[0]).json(thought)
+        : res.status(statusCodes[1]).json({ message: notFoundError });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async deleteThoughtById(req, res) {
@@ -61,10 +70,10 @@ module.exports = {
         _id: req.params.thoughtId,
       });
       thought
-        ? res.status(200).json({ message: "Thought successfully deleted" })
-        : res.status(404).json({ message: "No such thought" });
+        ? res.status(statusCodes[0]).json({ message: otherUserFeedback[1] })
+        : res.status(statusCodes[1]).json({ message: notFoundError });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async createReaction(req, res) {
@@ -75,10 +84,10 @@ module.exports = {
         { runValidators: true, new: true }
       );
       thought
-        ? res.status(200).json(thought)
-        : res.status(404).json({ message: "No such thought" });
+        ? res.status(statusCodes[0]).json(thought)
+        : res.status(statusCodes[1]).json({ message: notFoundError });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async deleteReaction(req, res) {
@@ -89,10 +98,10 @@ module.exports = {
         { new: true }
       );
       thought
-        ? res.status(200).json(thought)
-        : res.status(404).json({ message: "No such thought or reaction" });
+        ? res.status(statusCodes[0]).json(thought)
+        : res.status(statusCodes[1]).json({ message: otherUserFeedback[2] });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
 };

@@ -1,13 +1,17 @@
 const User = require("../models/User");
 const Thought = require("../models/Thought");
 
+//Global Constants
+const statusCodes = [200, 404, 500];
+const NotFoundError = "No user with that ID";
+
 module.exports = {
   async getAllUsers(req, res) {
     try {
       const users = await User.find().select("-__v");
-      res.status(200).json(users);
+      res.status(statusCodes[0]).json(users);
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async getSingleUser(req, res) {
@@ -16,18 +20,18 @@ module.exports = {
         "-__v"
       );
       user
-        ? res.status(200).json(user)
-        : res.status(404).json({ message: "No user with that ID" });
+        ? res.status(statusCodes[0]).json(user)
+        : res.status(statusCodes[1]).json({ message: NotFoundError });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async createNewUser(req, res) {
     try {
       const user = await User.create(req.body);
-      res.status(200).json(user);
+      res.status(statusCodes[0]).json(user);
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async updateById(req, res) {
@@ -37,10 +41,10 @@ module.exports = {
         { $set: req.body }
       );
       user
-        ? res.status(200).json(user)
-        : res.status(404).json({ message: "No user with that ID" });
+        ? res.status(statusCodes[0]).json(user)
+        : res.status(statusCodes[1]).json({ message: NotFoundError });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async deleteUser(req, res) {
@@ -48,7 +52,7 @@ module.exports = {
       const user = await User.findOneAndDelete({ _id: req.params.userId });
       //Guard - exit if no user
       if (!user) {
-        res.status(404).json({ message: "No user with that ID" });
+        res.status(statusCodes[1]).json({ message: NotFoundError });
         return;
       }
       /*Bonus -> Delete all associated thoughts before deleting
@@ -59,10 +63,10 @@ module.exports = {
       });
       console.log(deletedCount);
       res
-        .status(200)
+        .status(statusCodes[0])
         .json({ message: "User and thoughts were succesfully deleted!" });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async addNewFriendUserList(req, res) {
@@ -73,10 +77,10 @@ module.exports = {
         { runValidators: true, new: true }
       );
       friend
-        ? res.status(200).send(friend)
-        : res.send(404).json({ message: "No friend with that ID" });
+        ? res.status(statusCodes[0]).send(friend)
+        : res.send(statusCodes[1]).json({ message: NotFoundError });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
   async removeFriendUserList(req, res) {
@@ -87,10 +91,10 @@ module.exports = {
         { new: true }
       );
       user
-        ? res.status(200).json(user)
-        : res.status(404).json({ message: "No user with that id" });
+        ? res.status(statusCodes[0]).json(user)
+        : res.status(statusCodes[1]).json({ message: NotFoundError });
     } catch (error) {
-      res.status(500).json(error);
+      res.status(statusCodes[2]).json(error);
     }
   },
 };
