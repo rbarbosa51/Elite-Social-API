@@ -2,7 +2,7 @@ const Thought = require("../models/Thought");
 const User = require("../models/User");
 
 //Global constants
-//const msg.notThoughtFound = "No such thought";
+
 const http_200 = 200;
 const http_404 = 404;
 const http_500 = 500;
@@ -12,11 +12,7 @@ const msg = {
   thoughtDeleted: "Thought successfully deleted",
   noThoughtorReaction: "No such thought or reaction",
 };
-// const otherUserFeedback = [
-//   "No such user",
-//   "Thought successfully deleted",
-//   "No such thought or reaction",
-// ];
+
 
 module.exports = {
   async getAllThoughts(req, res) {
