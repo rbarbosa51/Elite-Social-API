@@ -5,8 +5,10 @@ const Thought = require("../models/Thought");
 const http_200 = 200;
 const http_404 = 404;
 const http_500 = 500;
-const notFoundError = "No user with that ID";
-const successDeletion = "User and thoughts were succesfully deleted!";
+const msg = {
+  noUserFound: "No user with that ID",
+  successDeletion: "User and thoughts were succesfully deleted!",
+};
 
 module.exports = {
   async getAllUsers(req, res) {
@@ -24,7 +26,7 @@ module.exports = {
       );
       user
         ? res.status(http_200).json(user)
-        : res.status(http_404).json({ message: notFoundError });
+        : res.status(http_404).json({ message: msg.noUserFound });
     } catch (error) {
       res.status(http_500).json(error);
     }
@@ -45,7 +47,7 @@ module.exports = {
       );
       user
         ? res.status(http_200).json(user)
-        : res.status(http_404).json({ message: notFoundError });
+        : res.status(http_404).json({ message: msg.noUserFound });
     } catch (error) {
       res.status(http_500).json(error);
     }
@@ -55,7 +57,7 @@ module.exports = {
       const user = await User.findOneAndDelete({ _id: req.params.userId });
       //Guard - exit if no user
       if (!user) {
-        res.status(http_404).json({ message: notFoundError });
+        res.status(http_404).json({ message: msg.noUserFound });
         return;
       }
       /*Bonus -> Delete all associated thoughts before deleting
@@ -65,7 +67,7 @@ module.exports = {
         username: user.username,
       });
       console.log(deletedCount);
-      res.status(http_200).json({ message: successDeletion });
+      res.status(http_200).json({ message: msg.successDeletion });
     } catch (error) {
       res.status(http_500).json(error);
     }
@@ -79,7 +81,7 @@ module.exports = {
       );
       friend
         ? res.status(http_200).send(friend)
-        : res.send(http_404).json({ message: notFoundError });
+        : res.send(http_404).json({ message: msg.noUserFound });
     } catch (error) {
       res.status(http_500).json(error);
     }
@@ -93,7 +95,7 @@ module.exports = {
       );
       user
         ? res.status(http_200).json(user)
-        : res.status(http_404).json({ message: notFoundError });
+        : res.status(http_404).json({ message: msg.noUserFound });
     } catch (error) {
       res.status(http_500).json(error);
     }

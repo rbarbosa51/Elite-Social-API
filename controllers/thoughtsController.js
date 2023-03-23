@@ -2,15 +2,21 @@ const Thought = require("../models/Thought");
 const User = require("../models/User");
 
 //Global constants
-const notFoundError = "No such thought";
+//const msg.notThoughtFound = "No such thought";
 const http_200 = 200;
 const http_404 = 404;
 const http_500 = 500;
-const otherUserFeedback = [
-  "No such user",
-  "Thought successfully deleted",
-  "No such thought or reaction",
-];
+const msg = {
+  notThoughtFound: "No such thought",
+  notUserFound: "No such user",
+  thoughtDeleted: "Thought successfully deleted",
+  noThoughtorReaction: "No such thought or reaction",
+};
+// const otherUserFeedback = [
+//   "No such user",
+//   "Thought successfully deleted",
+//   "No such thought or reaction",
+// ];
 
 module.exports = {
   async getAllThoughts(req, res) {
@@ -28,7 +34,7 @@ module.exports = {
       }).select("-__v");
       thought
         ? res.status(http_200).json(thought)
-        : res.status(http_404).json({ message: notFoundError });
+        : res.status(http_404).json({ message: msg.notThoughtFound });
       return;
     } catch (error) {
       res.status(http_500).json(error);
@@ -39,7 +45,7 @@ module.exports = {
       const user = await User.findById(req.body.userId);
       //Guard -- Exit if no user found
       if (!user) {
-        res.status(http_404).json({ message: otherUserFeedback[0] });
+        res.status(http_404).json({ message: msg.notUserFound });
         return;
       }
       const thought = await Thought.create({
@@ -61,7 +67,7 @@ module.exports = {
       );
       thought
         ? res.status(http_200).json(thought)
-        : res.status(http_404).json({ message: notFoundError });
+        : res.status(http_404).json({ message: msg.notThoughtFound });
     } catch (error) {
       res.status(http_500).json(error);
     }
@@ -72,8 +78,8 @@ module.exports = {
         _id: req.params.thoughtId,
       });
       thought
-        ? res.status(http_200).json({ message: otherUserFeedback[1] })
-        : res.status(http_404).json({ message: notFoundError });
+        ? res.status(http_200).json({ message: msg.thoughtDeleted })
+        : res.status(http_404).json({ message: msg.notThoughtFound });
     } catch (error) {
       res.status(http_500).json(error);
     }
@@ -87,7 +93,7 @@ module.exports = {
       );
       thought
         ? res.status(http_200).json(thought)
-        : res.status(http_404).json({ message: notFoundError });
+        : res.status(http_404).json({ message: msg.notThoughtFound });
     } catch (error) {
       res.status(http_500).json(error);
     }
@@ -101,7 +107,7 @@ module.exports = {
       );
       thought
         ? res.status(http_200).json(thought)
-        : res.status(http_404).json({ message: otherUserFeedback[2] });
+        : res.status(http_404).json({ message: msg.noThoughtorReaction });
     } catch (error) {
       res.status(http_500).json(error);
     }
